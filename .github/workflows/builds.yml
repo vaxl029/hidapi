@@ -1,6 +1,6 @@
 name: GitHub Builds
 
-on: [push, pull_request]
+on: [push, pull_request, workflow_dispatch]
 
 env:
   NIX_COMPILE_FLAGS:   -Wall -Wextra -pedantic -Werror
@@ -319,6 +319,20 @@ jobs:
         cd build_meson
         ninja
 
+    - name: Upload all Windows exe artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: hidapi-windows-exe-all
+        path: |
+          install/msvc/bin/*.exe
+          install/nmake/bin/*.exe
+          install/clang_cl/bin/*.exe
+          install/mingw/bin/*.exe
+          build/msvc_test/*.exe
+          build/nmake_test/*.exe
+          build/clang_cl_test/*.exe
+          build/mingw_test/*.exe
+
 
   windows-msbuild:
 
@@ -357,6 +371,13 @@ jobs:
         path: artifacts/
         retention-days: ${{ (github.event_name == 'pull_request' || github.ref_name != 'master') && 7 || 90 }}
 
+    - name: Upload msbuild exe
+      uses: actions/upload-artifact@v4
+      with:
+        name: hidapi-windows-msbuild-exe
+        path: |
+          windows/Release/*.exe
+          windows/x64/Release/*.exe
 
   fedora-mingw:
 
@@ -427,6 +448,13 @@ jobs:
         cd build/static_test
         ninja install
 
+    - name: Upload fedora mingw exe
+      uses: actions/upload-artifact@v4
+      with:
+        name: hidapi-fedora-mingw-exe
+        path: |
+          install/shared-cmake/bin/*.exe
+          install/static-cmake/bin/*.exe
 
   archlinux:
 
